@@ -83,11 +83,23 @@ public abstract class ScriptChaosType extends ChaosType {
             throw new IllegalStateException("Error reading script resource", e);
         }
 
-        ssh.put("/tmp/" + filename, script);
+        if (isSFTPEnabled()) {
+            ssh.put("/tmp/" + filename, script);
+        }
+        else {
+            writeFileUsingCat(ssh, "/tmp/" + filename, script);
+        }
+
         ExecResponse response = ssh.exec("/bin/bash /tmp/" + filename);
         if (response.getExitStatus() != 0) {
             LOGGER.warn("Got non-zero output from running script: {}", response);
         }
         ssh.disconnect();
+    }
+
+    private void writeFileUsingCat(SshClient ssh, String filename, String contents) {
+        String command = String.format("echo \"%s\" >> %s", contents, filename);
+        LOGGER.debug("Writing file using command: {}" + command);
+        ssh.exec(command);
     }
 }

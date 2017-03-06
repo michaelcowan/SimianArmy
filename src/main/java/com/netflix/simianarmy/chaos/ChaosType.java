@@ -144,4 +144,12 @@ public abstract class ChaosType {
 
         return (withRoot.size() != withoutRoot.size());
     }
+
+    /**
+     * Returns whether chaos scripts should be uploaded using SFTP or not.
+     * @return true iff SFTP should be used.
+     */
+    protected boolean isSFTPEnabled() {
+        return config.getBoolOrElse("simianarmy.chaos.sftp", true);
+    }
 }
